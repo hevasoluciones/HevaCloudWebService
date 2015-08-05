@@ -48,6 +48,9 @@ public class CenterCloud {
 
     /**
      * Web service operation
+     * @param appId
+     * @param appToken
+     * @return 
      */
     @WebMethod(operationName = "visitsforRegion")
     public String visitsforRegion(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken) {
@@ -58,6 +61,7 @@ public class CenterCloud {
     /**
      * Web service operation
      * @param Beacons
+     * @return 
      */
     @WebMethod(operationName = "getCampains")
     public String getCampains(@WebParam(name = "Beacons") String Beacons) {

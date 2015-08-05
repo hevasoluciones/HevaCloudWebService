@@ -5,13 +5,17 @@
  */
 package com.hevasoluciones.server;
 
+import com.hevasoluciones.db.ConnectionDB;
 import com.hevasoluciones.shared.Beacon;
+import com.hevasoluciones.shared.Campains;
 import com.hevasoluciones.shared.VRFields;
 import com.hevasoluciones.shared.Visits;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +32,7 @@ import org.json.simple.parser.ParseException;
 public class CloudMannagerImpl implements CloudMannager{
     
     
-    
+    private ConnectionDB cdb;
 
     @Override
     public Beacon getBeacon(String appId, String appToken) {
@@ -153,5 +157,86 @@ public class CloudMannagerImpl implements CloudMannager{
         return uniqueVisitors;
 
     }
+
+    @Override
+    public ArrayList getCampains() {
+        
+        
+     ArrayList campains= new ArrayList<>();
+     Campains campain= new Campains();
+     
+     cdb= new ConnectionDB();
+     
+     cdb.createConnection();
+     String Sql="select * from campain";
+     ResultSet result = cdb.runSQLSelect(Sql);
+     
+        try {
+            while (result.next())
+                
+            {
+
+                campain.setId(result.getInt ("idCampain"));
+                campain.setTitle(result.getString ("title"));
+                campain.setTitle(result.getString ("content"));
+                campain.setTitle(result.getString ("featuredImage"));
+                
+                campains.add(campain);
+               
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+     cdb.closeConnection();
+     return campains;
+        
+        
+    }
+
+    @Override
+    public String CreateNewCampain(Campains campain) {
+     
+    cdb= new ConnectionDB();
+    cdb.createConnection();
+    
+    String Sql="INSERT INTO \n" +
+"    `campain`\n" +
+"  (\n" +
+"    \n" +
+"    `title`,\n" +
+"    `content`,\n" +
+"    `featuredImage`) \n" +
+"  VALUE (\n" +
+"   \n" +
+     campain.getTitle() + "," +
+     campain.getContent()+ "," +
+     campain.getFeaturedImage()+";";
+    
+    ResultSet result = cdb.runSQLSelect(Sql);
+    
+    cdb.closeConnection();
+    cdb.createConnection();
+    
+     String Sql1="INSERT INTO  campain(title,content,featuredImage) VALUE("+
+     campain.getTitle() + "," +
+     campain.getContent()+ "," +
+     campain.getFeaturedImage() +");";
+    
+     ResultSet resultCampain = cdb.runSQLSelect(Sql1);
+     
+     
+    
+    
+    
+    
+        
+    return null; 
+        
+        
+    }
     
 }
+
+
