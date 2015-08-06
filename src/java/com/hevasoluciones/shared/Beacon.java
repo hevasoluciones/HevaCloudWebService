@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Beacon {
     
-  private String id;
+  private int id;
   private String uuid;
   private String major;
   private String minor;
@@ -41,11 +41,11 @@ public class Beacon {
         this.icon = icon;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

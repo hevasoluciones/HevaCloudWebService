@@ -19,6 +19,8 @@ public interface CloudMannager {
     
 public Beacon getBeacon(String appId , String appToken);   
 public VRFields  uniqueVisitorsforRegion(String appId,String appToken,String uuid,String Major);
-public ArrayList getCampains() ;
-public String  CreateNewCampain(Campains campain);
+public ArrayList<Campains> getCampains() ;
+public String  createNewCampain(Campains campain);
+public String  editCampain(int idCampin);
+public String  removeCampain(int idCampin);
 }

@@ -17,8 +17,8 @@ private int id;
 private String title;
 private String content;
 private String featuredImage;
-public ArrayList beacons;
-public ArrayList tags;
+public ArrayList<Beacon> beacons;
+public ArrayList<String> tags;
 
 
      public int getId() {

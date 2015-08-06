@@ -70,7 +70,7 @@ public class CloudMannagerImpl implements CloudMannager{
             for (Object pbeacon : beacon) {
 
                 JSONObject obj2 = (JSONObject) pbeacon;
-                myBeacons.setId((String) obj2.get("id"));
+                myBeacons.setId((int) obj2.get("id"));
                 myBeacons.setUuid((String) obj2.get("uuid"));
                 myBeacons.setMajor((String) obj2.get("major"));
                 myBeacons.setMinor((String) obj2.get("minor"));
@@ -159,10 +159,10 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public ArrayList getCampains() {
+    public ArrayList<Campains> getCampains() {
         
         
-     ArrayList campains= new ArrayList<>();
+     ArrayList<Campains> campains= new ArrayList<Campains>();
      Campains campain= new Campains();
      
      cdb= new ConnectionDB();
@@ -180,9 +180,18 @@ public class CloudMannagerImpl implements CloudMannager{
                 campain.setTitle(result.getString ("title"));
                 campain.setTitle(result.getString ("content"));
                 campain.setTitle(result.getString ("featuredImage"));
+                ArrayList<Beacon> beacons = cdb.getBeaconsByCampin(result.getInt ("idCampain"));
+                for(Beacon b: beacons){
+                campain.beacons.add(b);
+                
+                }
+                ArrayList<String> tags = cdb.getTagsByCampin(result.getInt ("idCampain"));
+                for(String t: tags){
+                campain.tags.add(t);
+                
+                }
                 
                 campains.add(campain);
-               
                 
             }
         } catch (SQLException ex) {
@@ -196,46 +205,64 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public String CreateNewCampain(Campains campain) {
+    public String createNewCampain(Campains campain) {
      
     cdb= new ConnectionDB();
     cdb.createConnection();
+    String idTag,idBeacon;
     
-    String Sql="INSERT INTO \n" +
-"    `campain`\n" +
-"  (\n" +
-"    \n" +
-"    `title`,\n" +
-"    `content`,\n" +
-"    `featuredImage`) \n" +
-"  VALUE (\n" +
-"   \n" +
-     campain.getTitle() + "," +
-     campain.getContent()+ "," +
-     campain.getFeaturedImage()+";";
-    
-    ResultSet result = cdb.runSQLSelect(Sql);
-    
-    cdb.closeConnection();
-    cdb.createConnection();
-    
-     String Sql1="INSERT INTO  campain(title,content,featuredImage) VALUE("+
-     campain.getTitle() + "," +
-     campain.getContent()+ "," +
-     campain.getFeaturedImage() +");";
-    
-     ResultSet resultCampain = cdb.runSQLSelect(Sql1);
-     
-     
+   String idCampain = cdb.insertCampain(campain.getTitle(),campain.getContent(),campain.getFeaturedImage());
+   
+   if(idCampain!=null){
+        for (Object tag : campain.getTags()) {
+            
+            
+        idTag=cdb.insertTag(tag.toString());
+        cdb.insertCamapinHasTag(idTag, idCampain);
+        
+        }
+        
+        for (Object beacon : campain.getBeacons()) {
+            
+            
+        idBeacon = cdb.insertTag(beacon.toString());
+        cdb.insertCamapinHasBeacons(idBeacon, idCampain);
+        
+        }  
+        
+   }
     
     
     
     
         
-    return null; 
+    return "Number" + idCampain + "Campain successfully created"; 
         
         
     }
+
+    @Override
+    public String editCampain(int idCampin) {
+       
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    
+    
+    }
+    
+     @Override
+    public String removeCampain(int idCampin) {
+       
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    
+    
+    }
+    
+    
+   
     
 }
 
