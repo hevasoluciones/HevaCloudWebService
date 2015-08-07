@@ -20,6 +20,13 @@ private String featuredImage;
 public ArrayList<Beacon> beacons;
 public ArrayList<String> tags;
 
+    public Campains() {
+        this.beacons = new ArrayList<Beacon>();
+        this.tags= new ArrayList<String>();
+    }
+
+
+
 
      public int getId() {
         return id;
@@ -52,7 +59,7 @@ public ArrayList<String> tags;
         this.featuredImage = featuredImage;
     }
 
-    public ArrayList getBeacons() {
+    public ArrayList<Beacon> getBeacons() {
         return beacons;
     }
 
@@ -60,7 +67,7 @@ public ArrayList<String> tags;
         this.beacons = beacons;
     }
 
-    public ArrayList getTags() {
+    public ArrayList<String> getTags() {
         return tags;
     }
 

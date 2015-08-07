@@ -110,7 +110,7 @@ public synchronized String insertCampain(String title,String Content,String feat
 
 } 
 
-public synchronized String insertBeacon(int idBeacon,String uuid,String major,String minor,String mac,String color ,String name,String icon,int idCampain) {
+public synchronized String insertBeacon(int idBeacon,String uuid,String major,String minor,String mac,String color ,String name,String icon) {
     String id = null;
        try {
             String sql =
@@ -122,9 +122,8 @@ public synchronized String insertBeacon(int idBeacon,String uuid,String major,St
                      + " mac,"
                      + " color,"
                      + " name,"
-                     + " icon,"
-                     + " idCampain) "
-                    + "VALUES (?,?,?,?,?,?,?,?,?)";
+                     + " icon) "
+                    + "VALUES (?,?,?,?,?,?,?,?)";
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
@@ -136,7 +135,6 @@ public synchronized String insertBeacon(int idBeacon,String uuid,String major,St
             ps.setString(6, color);
             ps.setString(7, name);
             ps.setString(8, icon);
-            ps.setInt(9, idCampain);
            
             
 
@@ -229,6 +227,36 @@ public synchronized String insertCamapinHasBeacons(String idBeacon,String idCamp
 
 
 }
+
+public synchronized String removeCamapinHasBeacons(String idBeacon,String idCampain) {
+    String id = null;
+       try {
+            String sql =
+                    "  DELETE FROM  hevacloud.campain_has_beacon WHERE (Campain_idCampain = ?  AND  Beacon_idBeacon = ?)";
+
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+           
+            ps.setString(1, idCampain);
+            ps.setString(2, idBeacon);
+          
+            
+      int result = -1;
+            result = ps.executeUpdate();
+            ps.close();
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle);
+        }
+
+        return "beacon associated with campaign was successfully deleted";
+
+       
+      
+ 
+    
+      
+
+
+}
 public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
     String id = null;
        try {
@@ -265,7 +293,7 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
 
 }
 
- public synchronized void deleteCampain(int idCampain) {
+ public synchronized boolean deleteCampain(int idCampain) {
      
      try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(
@@ -277,10 +305,12 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
             result = ps.executeUpdate();//devuelve filas borradas
             ps.close();
         } catch (SQLException sqle) {
+            
             throw new RuntimeException(sqle);
+            
         }
  
- 
+       return true;
  }
  
   public synchronized void deleteBeacon(int idBeacon) {
@@ -333,9 +363,7 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
             int rows = ps.executeUpdate(sql);
              ps.close();
 
-            //ps = connAAA.createStatement();
-            //rows = ps.executeUpdate(sqlAAA);
-            //ps.close();
+           
    
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle);
@@ -446,4 +474,27 @@ public void closeConnection(){
     
 
 }
+
+    public String removeCamapinHastag(String oldtag, String idCampain) {
+     String id = null;
+       try {
+            String sql =
+                    "  DELETE FROM  hevacloud.campain_has_tags WHERE (Campain_idCampain = ?  AND  Tags_idTags = ?)";
+
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+           
+            ps.setString(1, idCampain);
+            ps.setString(2, oldtag);
+          
+            
+      int result = -1;
+            result = ps.executeUpdate();
+            ps.close();
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle);
+        }
+
+        return "tag associated with campaign was successfully deleted";   
+    
+    }
 }

@@ -18,9 +18,10 @@ import java.util.ArrayList;
 public interface CloudMannager {
     
 public Beacon getBeacon(String appId , String appToken);   
-public VRFields  uniqueVisitorsforRegion(String appId,String appToken,String uuid,String Major);
+public VRFields  uniqueVisitorsforRegion(String appId,String appToken,String uuid);
+public VRFields VisitorsforRegion(String appId,String appToken,String uuid,String Major) ;
 public ArrayList<Campains> getCampains() ;
 public String  createNewCampain(Campains campain);
-public String  editCampain(int idCampin);
+public String  editCampain(int idCampin,Campains campain,ArrayList<Beacon> beacon,ArrayList<String> tag);
 public String  removeCampain(int idCampin);
 }

@@ -94,7 +94,7 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public VRFields uniqueVisitorsforRegion(String appId,String appToken,String uuid,String Major) {
+    public VRFields uniqueVisitorsforRegion(String appId,String appToken,String uuid) {
        
         
         VRFields uniqueVisitors = new VRFields();
@@ -102,7 +102,7 @@ public class CloudMannagerImpl implements CloudMannager{
         try {
 
             Runtime runtime = Runtime.getRuntime();
-            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid +":"+ Major +"/visits \\\n" +
+            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid+"/visits \\\n" +
 " -H \"Accept: application/json\"");
 
             InputStream is = proc.getInputStream();
@@ -155,6 +155,71 @@ public class CloudMannagerImpl implements CloudMannager{
         }
 
         return uniqueVisitors;
+
+    }
+    
+     @Override
+    public VRFields VisitorsforRegion(String appId,String appToken,String uuid,String Major) {
+       
+        
+        VRFields Visitors = new VRFields();
+        String beaconsjson = "";
+        try {
+
+            Runtime runtime = Runtime.getRuntime();
+            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid +":"+ Major +"/visits \\\n" +
+" -H \"Accept: application/json\"");
+
+            InputStream is = proc.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                //System.out.println(line);
+                beaconsjson += line;
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        JSONParser parser = new JSONParser();
+        beaconsjson="[" + beaconsjson + "]";
+
+        try {
+            Object obj = parser.parse(beaconsjson);
+            JSONArray beacon = (JSONArray) obj;
+
+            for (Object pbeacon : beacon) {
+
+                JSONObject obj2 = (JSONObject) pbeacon;
+                Visitors.setRegion((String) obj2.get("region"));
+                String visists=obj2.get("visits").toString();
+                Object obj1 = parser.parse(visists);
+                JSONArray v = (JSONArray) obj1;
+                Visits vi=new Visits();
+                
+                for (Object pv : v) {
+                    JSONObject obj3 = (JSONObject) pv;
+                   
+                    vi.setTotal_visits((int)obj3.get("total_visits"));
+                    vi.setApp_in_background_visits((int)obj3.get("app_in_foreground_visits"));
+                    vi.setApp_in_foreground_visits((int)obj3.get("app_in_background_visits"));
+                    vi.setTime((String)obj3.get("time"));
+                    Visitors.visits.add(vi);
+                    
+                }
+
+            }
+
+        } catch (ParseException pe) {
+            System.out.println("position: " + pe.getPosition());
+            System.out.println(pe);
+        }
+
+        return Visitors;
 
     }
 
@@ -214,18 +279,18 @@ public class CloudMannagerImpl implements CloudMannager{
    String idCampain = cdb.insertCampain(campain.getTitle(),campain.getContent(),campain.getFeaturedImage());
    
    if(idCampain!=null){
-        for (Object tag : campain.getTags()) {
+        for (String  tag : campain.getTags()) {
             
             
-        idTag=cdb.insertTag(tag.toString());
+        idTag=cdb.insertTag(tag);
         cdb.insertCamapinHasTag(idTag, idCampain);
         
         }
         
-        for (Object beacon : campain.getBeacons()) {
+        for (Beacon beacon : campain.getBeacons()) {
             
             
-        idBeacon = cdb.insertTag(beacon.toString());
+        idBeacon = cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
         cdb.insertCamapinHasBeacons(idBeacon, idCampain);
         
         }  
@@ -242,21 +307,133 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public String editCampain(int idCampin) {
+    public String editCampain(int idCampain,Campains campain, ArrayList<Beacon> beacon,ArrayList<String> tag) {
+      cdb= new ConnectionDB();
+      cdb.createConnection();
+      
+      ArrayList<Beacon> bc = new ArrayList<Beacon>();
+       ArrayList<String> tbc = new ArrayList<String>();
+      
        
+        try {
+            cdb.editCampain(campain.getTitle(),campain.getContent(),campain.getFeaturedImage(),idCampain);
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+   
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    
-    
-    
+        try {
+          bc = cdb.getBeaconsByCampin(idCampain);
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    // comprobamos en la nueva lista de beacons hay alguno que no este registrado, si lo esta lo inserto    
+        for(Beacon b: beacon){
+       
+        int count=0;
+        
+        for(Beacon beaconsByCampain : bc){
+        
+            if(b.getId()!=beaconsByCampain.getId()){
+            
+              count++;
+            }
+        
+        }
+          if(count==0){
+              
+          String idBeacon = cdb.insertBeacon(b.getId(),b.getUuid(),b.getMajor(),b.getMinor(),b.getMac(),b.getColor(),b.getName(),b.getIcon());
+           cdb.insertCamapinHasBeacons(idBeacon, String.valueOf(idCampain));
+        
+          }
+        
+        }
+ //comprobamos si en la nueva lista existen todos los beacons que estaban asociados a la campaña. El que no esta lo eliminamos.       
+        
+   for(Beacon oldbeacon: bc){
+       
+        int count=0;
+        
+        for(Beacon newBeacon : beacon){
+        
+            if(oldbeacon.getId()==newBeacon.getId()){
+            
+              count++;
+            }
+        
+        }
+          if(count==0){
+              
+         
+           cdb.removeCamapinHasBeacons(String.valueOf(oldbeacon.getId()), String.valueOf(idCampain));
+        
+          }
+        
+        }     
+        
+          try {
+          tbc = cdb.getTagsByCampin(idCampain);
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+         for(String nameTag: tag){
+       
+        int count=0;
+        
+        for(String tagByCampain : tbc){
+        
+            if(nameTag.equals(tagByCampain)){
+            
+              count++;
+            }
+        
+        }
+          if(count==0){
+              
+           String idtag = cdb.insertTag(nameTag);
+           cdb.insertCamapinHasBeacons(idtag, String.valueOf(idCampain));
+        
+          }
+        
+        }
+         
+         
+         for(String oldtag: tbc){
+       
+        int count=0;
+        
+        for(String newtag : tag){
+        
+            if(oldtag.equals(newtag)){
+            
+              count++;
+            }
+        
+        }
+          if(count==0){
+              
+         
+           cdb.removeCamapinHastag(oldtag, String.valueOf(idCampain));
+        
+          }
+        
+        }    
+        
+      return "Number" + idCampain + "Campain successfully edited"; 
     }
     
      @Override
     public String removeCampain(int idCampin) {
        
+        cdb= new ConnectionDB();
+        cdb.createConnection();
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    
+        boolean rc = cdb.deleteCampain(idCampin);
+        if(rc)
+        return "Campain removed successfully"    ;
+        else
+        return "An error has occurred" ;
     
     
     }
