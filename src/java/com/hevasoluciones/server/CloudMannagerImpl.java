@@ -35,16 +35,15 @@ public class CloudMannagerImpl implements CloudMannager{
     private ConnectionDB cdb;
 
     @Override
-    public Beacon getBeacon(String appId, String appToken) {
+    public ArrayList<Beacon> getBeacon(String appId, String appToken) {
         
         Beacon myBeacons = new Beacon();
+        ArrayList<Beacon>myBeaconsList= new ArrayList<Beacon>();
         String beaconsjson = "";
         try {
 
             Runtime runtime = Runtime.getRuntime();
-            Process proc = runtime.exec(" curl -u " + appId + ":" + appToken + "\\\n"
-                    + "         -H 'Accept: application/json' \\\n"
-                    + "         https://cloud.estimote.com/v1/beacons");
+            Process proc = runtime.exec(" curl -u " + appId + ":" + appToken + " https://cloud.estimote.com/v1/beacons -H \"Accept: application/json");
 
             InputStream is = proc.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -81,6 +80,8 @@ public class CloudMannagerImpl implements CloudMannager{
                 myBeacons.setIcon((String) obj2.get("icon"));
                 myBeacons.setBattery_life_expectancy_in_days((int) obj2.get("battery_life_expectancy_in_days"));
                 myBeacons.setTags((ArrayList) obj2.get("tags"));
+                
+                myBeaconsList.add(myBeacons);
 
             }
 
@@ -89,7 +90,7 @@ public class CloudMannagerImpl implements CloudMannager{
             System.out.println(pe);
         }
 
-        return myBeacons;
+        return myBeaconsList;
 
     }
 
@@ -98,12 +99,12 @@ public class CloudMannagerImpl implements CloudMannager{
        
         
         VRFields uniqueVisitors = new VRFields();
+      
         String beaconsjson = "";
         try {
 
             Runtime runtime = Runtime.getRuntime();
-            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid+"/visits \\\n" +
-" -H \"Accept: application/json\"");
+            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid+"/visits  -H \"Accept: application/json");
 
             InputStream is = proc.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -146,7 +147,7 @@ public class CloudMannagerImpl implements CloudMannager{
                     uniqueVisitors.visits.add(vi);
                     
                 }
-
+            
             }
 
         } catch (ParseException pe) {
@@ -163,12 +164,12 @@ public class CloudMannagerImpl implements CloudMannager{
        
         
         VRFields Visitors = new VRFields();
+      
         String beaconsjson = "";
         try {
 
             Runtime runtime = Runtime.getRuntime();
-            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid +":"+ Major +"/visits \\\n" +
-" -H \"Accept: application/json\"");
+            Process proc = runtime.exec("curl -u" + appId + ":" + appToken+ " https://cloud.estimote.com/v1/analytics/"+uuid +":"+ Major +"/visits -H \"Accept: application/json");
 
             InputStream is = proc.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -211,7 +212,7 @@ public class CloudMannagerImpl implements CloudMannager{
                     Visitors.visits.add(vi);
                     
                 }
-
+             
             }
 
         } catch (ParseException pe) {
@@ -270,27 +271,29 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public String createNewCampain(Campains campain) {
+    public String createNewCampain(String title,String content,String  featuredImage, ArrayList<Beacon> beaconList,ArrayList<String> tags) {
+        
+        
      
     cdb= new ConnectionDB();
     cdb.createConnection();
-    String idTag,idBeacon;
     
-   String idCampain = cdb.insertCampain(campain.getTitle(),campain.getContent(),campain.getFeaturedImage());
+    
+   String idCampain = cdb.insertCampain(title,content,featuredImage);
    
    if(idCampain!=null){
-        for (String  tag : campain.getTags()) {
+        for (String  tag : tags) {
             
             
-        idTag=cdb.insertTag(tag);
+        String idTag = cdb.insertTag(tag);
         cdb.insertCamapinHasTag(idTag, idCampain);
         
         }
         
-        for (Beacon beacon : campain.getBeacons()) {
+        for (Beacon beacon : beaconList) {
             
             
-        idBeacon = cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
+        String idBeacon = cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
         cdb.insertCamapinHasBeacons(idBeacon, idCampain);
         
         }  
@@ -307,7 +310,7 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public String editCampain(int idCampain,Campains campain, ArrayList<Beacon> beacon,ArrayList<String> tag) {
+    public String editCampain(int idCampain,String title,String content,String  featuredImage, ArrayList<Beacon> beacon,ArrayList<String> tag) {
       cdb= new ConnectionDB();
       cdb.createConnection();
       
@@ -316,7 +319,7 @@ public class CloudMannagerImpl implements CloudMannager{
       
        
         try {
-            cdb.editCampain(campain.getTitle(),campain.getContent(),campain.getFeaturedImage(),idCampain);
+            cdb.editCampain(title,content,featuredImage,idCampain);
         } catch (SQLException ex) {
             Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -436,6 +439,33 @@ public class CloudMannagerImpl implements CloudMannager{
         return "An error has occurred" ;
     
     
+    }
+
+    @Override
+    public String insertBeacon(Beacon beacon) {
+        cdb= new ConnectionDB();
+        cdb.createConnection();
+        return cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
+   
+    }
+
+    @Override
+    public ArrayList<Beacon> getBeaconsfromDB() {
+         cdb= new ConnectionDB();
+        cdb.createConnection();
+        return cdb.getBeacons();
+    }
+
+    @Override
+    public ArrayList<String> getTags() {
+        cdb= new ConnectionDB();
+        cdb.createConnection();
+        try {
+            return cdb.getTags();
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     

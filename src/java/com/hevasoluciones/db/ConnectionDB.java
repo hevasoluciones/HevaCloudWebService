@@ -497,4 +497,64 @@ public void closeConnection(){
         return "tag associated with campaign was successfully deleted";   
     
     }
+    
+    public synchronized ArrayList<Beacon> getBeacons() {
+    String id = null;
+    ArrayList<Beacon> bl= new ArrayList<Beacon>();
+       try {
+            String sql =
+                    "SELECT "
+                     + " idBeacon,"
+                     + " uuid,"
+                     + " major,"
+                     + " minor,"
+                     + " mac,"
+                     + " color,"
+                     + " name,"
+                     + " icon "
+                    + "FROM beacon ";
+
+           Statement ps2 = connection.createStatement();
+            ResultSet blRs = ps2.executeQuery(sql);
+            while (blRs.next()) {
+                Beacon b = new Beacon();
+                    b.setId(blRs.getInt("idBeacon"));
+                    b.setUuid(blRs.getString("uuid"));
+                    b.setMajor(blRs.getString("major"));
+                    b.setMinor(blRs.getString("minor"));
+                    b.setMac(blRs.getString("mac"));
+                    b.setColor(blRs.getString("color"));
+                    b.setName(blRs.getString("name"));
+                    b.setIcon(blRs.getString("icon"));
+
+               bl .add(b);
+            }
+            ps2.close();
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ConnectionDB.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return bl;
+      
+
+
+} 
+
+    public ArrayList<String> getTags() throws SQLException {
+
+        ArrayList<String> taglist = new ArrayList<>();
+        String query = "Select Name " + " FROM hevacloud.tags";
+
+        Statement ps2 = connection.createStatement();
+        ResultSet tRs = ps2.executeQuery(query);
+        while (tRs.next()) {
+
+            String tag = tRs.getString("Name");
+            taglist.add(tag);
+        }
+
+        return taglist;
+    }
 }
