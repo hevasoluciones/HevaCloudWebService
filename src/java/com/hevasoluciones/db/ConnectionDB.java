@@ -110,7 +110,7 @@ public synchronized String insertCampain(String title,String Content,String feat
 
 } 
 
-public synchronized String insertBeacon(int idBeacon,String uuid,String major,String minor,String mac,String color ,String name,String icon) {
+public synchronized String insertBeacon(String idBeacon,String uuid,long major,long minor,String mac,String color ,String name,String icon) {
     String id = null;
        try {
             String sql =
@@ -127,10 +127,10 @@ public synchronized String insertBeacon(int idBeacon,String uuid,String major,St
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setInt(1, idBeacon);
+            ps.setString(1, idBeacon);
             ps.setString(2, uuid);
-            ps.setString(3, major);
-            ps.setString(4, minor);
+            ps.setLong(3, major);
+            ps.setLong(4, minor);
             ps.setString(5, mac);
             ps.setString(6, color);
             ps.setString(7, name);
@@ -396,10 +396,10 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
                ResultSet blRs = ps2.executeQuery(query);
                 while (blRs.next()) {
                 
-                    b.setId(blRs.getInt("idBeacon"));
+                    b.setId(blRs.getString("idBeacon"));
                     b.setUuid(blRs.getString("uuid"));
-                    b.setMajor(blRs.getString("major"));
-                    b.setMinor(blRs.getString("minor"));
+                    b.setMajor(blRs.getLong("major"));
+                    b.setMinor(blRs.getLong("minor"));
                     b.setMac(blRs.getString("mac"));
                     b.setColor(blRs.getString("color"));
                     b.setName(blRs.getString("name"));
@@ -518,10 +518,10 @@ public void closeConnection(){
             ResultSet blRs = ps2.executeQuery(sql);
             while (blRs.next()) {
                 Beacon b = new Beacon();
-                    b.setId(blRs.getInt("idBeacon"));
+                    b.setId(blRs.getString("idBeacon"));
                     b.setUuid(blRs.getString("uuid"));
-                    b.setMajor(blRs.getString("major"));
-                    b.setMinor(blRs.getString("minor"));
+                    b.setMajor(blRs.getLong("major"));
+                    b.setMinor(blRs.getLong("minor"));
                     b.setMac(blRs.getString("mac"));
                     b.setColor(blRs.getString("color"));
                     b.setName(blRs.getString("name"));

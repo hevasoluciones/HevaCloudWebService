@@ -15,10 +15,17 @@ import java.util.ArrayList;
  *
  * @author rafael.rosabal@gmail.com
  */
-public class VRFields {
+public class VisitsRegionSpec {
     
   private  String region;
-  public   ArrayList  visits;      
+  public   ArrayList<Visits>  visits;     
+
+    public VisitsRegionSpec() {
+        
+        this.visits= new ArrayList<Visits>();
+    }
+  
+  
 
     public String getRegion() {
         return region;
@@ -28,13 +35,7 @@ public class VRFields {
         this.region = region;
     }
 
-    public ArrayList getVisits() {
-        return visits;
-    }
-
-    public void setVisits(ArrayList visits) {
-        this.visits = visits;
-    }
+  
 
  
     

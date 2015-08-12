@@ -8,7 +8,7 @@ package com.hevasoluciones.server;
 import com.hevasoluciones.db.ConnectionDB;
 import com.hevasoluciones.shared.Beacon;
 import com.hevasoluciones.shared.Campains;
-import com.hevasoluciones.shared.VRFields;
+import com.hevasoluciones.shared.VisitsRegionSpec;
 import com.hevasoluciones.shared.Visits;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,20 +69,21 @@ public class CloudMannagerImpl implements CloudMannager{
             for (Object pbeacon : beacon) {
 
                 JSONObject obj2 = (JSONObject) pbeacon;
-                myBeacons.setId((int) obj2.get("id"));
+               
+                myBeacons.setId( (String)obj2.get("id"));
                 myBeacons.setUuid((String) obj2.get("uuid"));
-                myBeacons.setMajor((String) obj2.get("major"));
-                myBeacons.setMinor((String) obj2.get("minor"));
+                myBeacons.setMajor((long) obj2.get("major"));
+                myBeacons.setMinor((long) obj2.get("minor"));
                 myBeacons.setMac((String) obj2.get("mac"));
-                myBeacons.setSettings(obj2.get("settings"));
+               // myBeacons.setSettings(obj2.get("settings"));
                 myBeacons.setColor((String) obj2.get("color"));
                 myBeacons.setName((String) obj2.get("name"));
                 myBeacons.setIcon((String) obj2.get("icon"));
-                myBeacons.setBattery_life_expectancy_in_days((int) obj2.get("battery_life_expectancy_in_days"));
-                myBeacons.setTags((ArrayList) obj2.get("tags"));
+               // myBeacons.setBattery_life_expectancy_in_days((int) obj2.get("battery_life_expectancy_in_days"));
+                myBeacons.setTags((ArrayList<String>) obj2.get("tags"));
                 
                 myBeaconsList.add(myBeacons);
-
+                myBeacons = new Beacon();
             }
 
         } catch (ParseException pe) {
@@ -95,10 +96,10 @@ public class CloudMannagerImpl implements CloudMannager{
     }
 
     @Override
-    public VRFields uniqueVisitorsforRegion(String appId,String appToken,String uuid) {
+    public VisitsRegionSpec uniqueVisitorsforRegion(String appId,String appToken,String uuid) {
        
         
-        VRFields uniqueVisitors = new VRFields();
+        VisitsRegionSpec uniqueVisitors = new VisitsRegionSpec();
       
         String beaconsjson = "";
         try {
@@ -140,13 +141,14 @@ public class CloudMannagerImpl implements CloudMannager{
                 for (Object pv : v) {
                     JSONObject obj3 = (JSONObject) pv;
                    
-                    vi.setTotal_visits((int)obj3.get("total_visits"));
-                    vi.setApp_in_background_visits((int)obj3.get("app_in_foreground_visits"));
-                    vi.setApp_in_foreground_visits((int)obj3.get("app_in_background_visits"));
+                    vi.setTotal_visits((long)obj3.get("total_visits"));
+                    vi.setApp_in_background_visits((long)obj3.get("app_in_foreground_visits"));
+                    vi.setApp_in_foreground_visits((long)obj3.get("app_in_background_visits"));
                     vi.setTime((String)obj3.get("time"));
                     uniqueVisitors.visits.add(vi);
-                    
+                    vi=new Visits();
                 }
+            
             
             }
 
@@ -160,10 +162,10 @@ public class CloudMannagerImpl implements CloudMannager{
     }
     
      @Override
-    public VRFields VisitorsforRegion(String appId,String appToken,String uuid,String Major) {
+    public VisitsRegionSpec VisitorsforRegion(String appId,String appToken,String uuid,String Major) {
        
         
-        VRFields Visitors = new VRFields();
+        VisitsRegionSpec Visitors = new VisitsRegionSpec();
       
         String beaconsjson = "";
         try {
@@ -205,12 +207,12 @@ public class CloudMannagerImpl implements CloudMannager{
                 for (Object pv : v) {
                     JSONObject obj3 = (JSONObject) pv;
                    
-                    vi.setTotal_visits((int)obj3.get("total_visits"));
-                    vi.setApp_in_background_visits((int)obj3.get("app_in_foreground_visits"));
-                    vi.setApp_in_foreground_visits((int)obj3.get("app_in_background_visits"));
+                    vi.setTotal_visits((long)obj3.get("total_visits"));
+                    vi.setApp_in_background_visits((long)obj3.get("app_in_foreground_visits"));
+                    vi.setApp_in_foreground_visits((long)obj3.get("app_in_background_visits"));
                     vi.setTime((String)obj3.get("time"));
                     Visitors.visits.add(vi);
-                    
+                    vi=new Visits();
                 }
              
             }

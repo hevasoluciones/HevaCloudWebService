@@ -9,7 +9,7 @@ import com.hevasoluciones.server.CloudMannager;
 import com.hevasoluciones.server.CloudMannagerImpl;
 import com.hevasoluciones.shared.Beacon;
 import com.hevasoluciones.shared.Campains;
-import com.hevasoluciones.shared.VRFields;
+import com.hevasoluciones.shared.VisitsRegionSpec;
 import java.util.ArrayList;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
@@ -30,12 +30,12 @@ public class CenterCloud {
      * @param appToken
      * @return 
      */
-    @WebMethod(operationName = "getBeacons")
+   @WebMethod(operationName = "getBeacons")
     public ArrayList<Beacon> getBeacons(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken) {
         //TODO write your implementation code here:
         cm= new CloudMannagerImpl();
         return cm.getBeacon(appId, appToken);
-        
+      
     }
 
     /**
@@ -45,8 +45,8 @@ public class CenterCloud {
      * @param uuid
      * @return 
      */
-    @WebMethod(operationName = "uniqueVisitorsforRegion")
-    public VRFields uniqueVisitorsforRegion(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken, @WebParam(name = "uuid") String uuid) {
+  @WebMethod(operationName = "uniqueVisitorsforRegion")
+    public VisitsRegionSpec uniqueVisitorsforRegion(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken, @WebParam(name = "uuid") String uuid) {
         //TODO write your implementation code here:
           cm= new CloudMannagerImpl();
         return cm.uniqueVisitorsforRegion(appId, appToken, uuid);
@@ -60,8 +60,8 @@ public class CenterCloud {
      * @param major
      * @return 
      */
-    @WebMethod(operationName = "visitsforRegion")
-    public VRFields visitsforRegion(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken, @WebParam(name = "uuid") String uuid, @WebParam(name = "major") String major) {
+  @WebMethod(operationName = "visitsforRegion")
+   public VisitsRegionSpec visitsforRegion(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken, @WebParam(name = "uuid") String uuid, @WebParam(name = "major") String major) {
         
          cm= new CloudMannagerImpl();
         return cm.VisitorsforRegion(appId,appToken,uuid,major);

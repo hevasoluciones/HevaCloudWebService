@@ -13,25 +13,32 @@ import java.util.ArrayList;
  */
 public class Beacon {
     
-  private int id;
+  private String id;
   private String uuid;
-  private String major;
-  private String minor;
+  private long major;
+  private long minor;
   private String mac;
   private String color;
   private String name;
-  private int battery_life_expectancy_in_days;
-  private ArrayList tags;
-  private Object settings;
-  private int interval;
+  //private int battery_life_expectancy_in_days;
+  private ArrayList<String> tags;
+  //private Object settings;
+  /*private int interval;
   private float range;
   private String hardware;
   private String firmware;
   private boolean  basic_power_mode;
   private boolean  smart_power_mode;
   private String timezone;
-  private boolean security;
+  private boolean security;*/
   private String icon;
+
+    public Beacon() {
+  
+    this.tags= new ArrayList<>();
+    }
+  
+  
 
     public String getIcon() {
         return icon;
@@ -41,11 +48,11 @@ public class Beacon {
         this.icon = icon;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -57,19 +64,19 @@ public class Beacon {
         this.uuid = uuid;
     }
 
-    public String getMajor() {
+    public long getMajor() {
         return major;
     }
 
-    public void setMajor(String major) {
+    public void setMajor(long major) {
         this.major = major;
     }
 
-    public String getMinor() {
+    public long getMinor() {
         return minor;
     }
 
-    public void setMinor(String minor) {
+    public void setMinor(long minor) {
         this.minor = minor;
     }
 
@@ -97,31 +104,31 @@ public class Beacon {
         this.name = name;
     }
 
-    public int getBattery_life_expectancy_in_days() {
+  /*  public int getBattery_life_expectancy_in_days() {
         return battery_life_expectancy_in_days;
     }
 
     public void setBattery_life_expectancy_in_days(int battery_life_expectancy_in_days) {
         this.battery_life_expectancy_in_days = battery_life_expectancy_in_days;
-    }
+    }*/
 
-    public ArrayList getTags() {
+    public ArrayList<String> getTags() {
         return tags;
     }
 
-    public void setTags(ArrayList tags) {
+    public void setTags(ArrayList<String> tags) {
         this.tags = tags;
     }
 
-    public Object getSettings() {
+  /*  public Object getSettings() {
         return settings;
     }
 
     public void setSettings(Object settings) {
         this.settings = settings;
-    }
+    }*/
 
-    public int getInterval() {
+  /*  public int getInterval() {
         return interval;
     }
 
@@ -185,7 +192,7 @@ public class Beacon {
         this.security = security;
     }
 
-  
+  */
   
   
     

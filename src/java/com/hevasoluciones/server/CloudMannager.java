@@ -7,7 +7,8 @@ package com.hevasoluciones.server;
 
 import com.hevasoluciones.shared.Beacon;
 import com.hevasoluciones.shared.Campains;
-import com.hevasoluciones.shared.VRFields;
+import com.hevasoluciones.shared.VisitsRegionSpec;
+import com.hevasoluciones.shared.Visits;
 import java.util.ArrayList;
 
 
@@ -18,8 +19,8 @@ import java.util.ArrayList;
 public interface CloudMannager {
     
 public ArrayList<Beacon> getBeacon(String appId , String appToken);   
-public VRFields  uniqueVisitorsforRegion(String appId,String appToken,String uuid);
-public VRFields VisitorsforRegion(String appId,String appToken,String uuid,String Major) ;
+public VisitsRegionSpec  uniqueVisitorsforRegion(String appId,String appToken,String uuid);
+public VisitsRegionSpec VisitorsforRegion(String appId,String appToken,String uuid,String Major);
 public ArrayList<Campains> getCampains() ;
 public String  createNewCampain(String title,String content,String  featuredImage, ArrayList<Beacon> beacon,ArrayList<String> tag);
 public String  editCampain(int idCampin,String title,String content,String  featuredImage,ArrayList<Beacon> beacon,ArrayList<String> tag);

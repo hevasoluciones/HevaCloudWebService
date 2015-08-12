@@ -12,9 +12,16 @@ package com.hevasoluciones.shared;
 public class Visits {
     
    String time;
-   int app_in_foreground_visits;
-   int app_in_background_visits;
-   int total_visits;
+   long app_in_foreground_visits;
+   long app_in_background_visits;
+   long total_visits;
+
+    public Visits() {
+   
+    
+    }
+   
+   
 
     public String getTime() {
         return time;
@@ -24,27 +31,27 @@ public class Visits {
         this.time = time;
     }
 
-    public int getApp_in_foreground_visits() {
+    public long getApp_in_foreground_visits() {
         return app_in_foreground_visits;
     }
 
-    public void setApp_in_foreground_visits(int app_in_foreground_visits) {
+    public void setApp_in_foreground_visits(long app_in_foreground_visits) {
         this.app_in_foreground_visits = app_in_foreground_visits;
     }
 
-    public int getApp_in_background_visits() {
+    public long getApp_in_background_visits() {
         return app_in_background_visits;
     }
 
-    public void setApp_in_background_visits(int app_in_background_visits) {
+    public void setApp_in_background_visits(long app_in_background_visits) {
         this.app_in_background_visits = app_in_background_visits;
     }
 
-    public int getTotal_visits() {
+    public long getTotal_visits() {
         return total_visits;
     }
 
-    public void setTotal_visits(int total_visits) {
+    public void setTotal_visits(long total_visits) {
         this.total_visits = total_visits;
     }
    
