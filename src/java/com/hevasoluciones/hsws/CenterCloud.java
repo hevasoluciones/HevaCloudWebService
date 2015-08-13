@@ -120,4 +120,22 @@ public class CenterCloud {
        cm= new CloudMannagerImpl();
        return cm.createNewCampain(title, content, featuredImage, beaconList, tagList);
     }
+
+    /**
+     * Web service operation
+     * @param beacon
+     * @return 
+     */
+    @WebMethod(operationName = "insertBeaconFistTime")
+    public String insertBeaconFistTime() {
+       cm= new CloudMannagerImpl();
+     ArrayList<Beacon> mybeacon = cm.getBeacon("redigitalbeacons", "68fed2c1fecc03e461572b3e72652440");
+     
+     for(Beacon b: mybeacon)
+     {
+     cm.insertBeacon(b);
+     
+     }
+        return "ok";
+    }
 }

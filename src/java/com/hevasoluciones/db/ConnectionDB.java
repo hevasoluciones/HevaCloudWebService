@@ -73,8 +73,8 @@ public ResultSet runSQLSelect(String sql)
 } 
   
 
-public synchronized String insertCampain(String title,String Content,String featuredImage) {
-    String id = null;
+public synchronized int insertCampain(String title,String Content,String featuredImage) {
+    int id = 0;
        try {
             String sql =
                     "INSERT INTO hevacloud.campain ("
@@ -94,7 +94,7 @@ public synchronized String insertCampain(String title,String Content,String feat
             
              ResultSet  generatedKeys = ps.getGeneratedKeys();
            if (generatedKeys.next()) {
-                 id = String.valueOf(generatedKeys.getInt(1));
+                 id =generatedKeys.getInt(1);
              }
             ps.close();
         } catch (SQLException sqle) {
@@ -115,23 +115,23 @@ public synchronized String insertBeacon(String idBeacon,String uuid,long major,l
        try {
             String sql =
                     "INSERT INTO hevacloud.beacon ("
+                     + " mac,"
                      + " idBeacon,"
                      + " uuid,"
                      + " major,"
                      + " minor,"
-                     + " mac,"
                      + " color,"
                      + " name,"
                      + " icon) "
                     + "VALUES (?,?,?,?,?,?,?,?)";
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-           
-            ps.setString(1, idBeacon);
-            ps.setString(2, uuid);
-            ps.setLong(3, major);
-            ps.setLong(4, minor);
-            ps.setString(5, mac);
+            
+            ps.setString(1, mac);
+            ps.setString(2, idBeacon);
+            ps.setString(3, uuid);
+            ps.setLong(4, major);
+            ps.setLong(5, minor);
             ps.setString(6, color);
             ps.setString(7, name);
             ps.setString(8, icon);
@@ -162,7 +162,7 @@ public synchronized String insertTag(String tagName) {
     String id = null;
        try {
             String sql =
-                    "INSERT INTO hevacloud.tag ( Name ) "
+                    "INSERT INTO hevacloud.tags ( Name ) "
                     + "VALUE (?)";
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -192,19 +192,19 @@ public synchronized String insertTag(String tagName) {
 
 }
 
-public synchronized String insertCamapinHasBeacons(String idBeacon,String idCampain) {
+public synchronized String insertCamapinHasBeacons(String mac,int idCampain) {
     String id = null;
        try {
             String sql =
                     "INSERT INTO hevacloud.campain_has_beacon ("
                     + " Campain_idCampain,"
-                    + " Beacon_idBeacon) "
+                    + " Beacon_mac) "
                     + "VALUES (?,?)";
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setString(1, idCampain);
-            ps.setString(2, idBeacon);
+            ps.setInt(1, idCampain);
+            ps.setString(2, mac);
           
             
 
@@ -228,16 +228,16 @@ public synchronized String insertCamapinHasBeacons(String idBeacon,String idCamp
 
 }
 
-public synchronized String removeCamapinHasBeacons(String idBeacon,String idCampain) {
+public synchronized String removeCamapinHasBeacons(String mac,int idCampain) {
     String id = null;
        try {
             String sql =
-                    "  DELETE FROM  hevacloud.campain_has_beacon WHERE (Campain_idCampain = ?  AND  Beacon_idBeacon = ?)";
+                    "  DELETE FROM  hevacloud.campain_has_beacon WHERE (Campain_idCampain = ?  AND  Beacon_mac = ?)";
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setString(1, idCampain);
-            ps.setString(2, idBeacon);
+            ps.setInt(1, idCampain);
+            ps.setString(2, mac);
           
             
       int result = -1;
@@ -257,7 +257,7 @@ public synchronized String removeCamapinHasBeacons(String idBeacon,String idCamp
 
 
 }
-public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
+public synchronized String insertCamapinHasTag(int idTag,int idCampain) {
     String id = null;
        try {
             String sql =
@@ -268,8 +268,8 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setString(1, idCampain);
-            ps.setString(2, idTag);
+            ps.setInt(1, idCampain);
+            ps.setInt(2, idTag);
           
             
 
@@ -298,7 +298,7 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
      try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(
                     "DELETE FROM hevacloud.campain "
-                    + " WHERE((`campain`.`idCampain` = ?)");
+                    + " WHERE(`campain`.`idCampain` = ?)");
             ps.setInt(1, idCampain);
           
             int result = -1;
@@ -313,13 +313,13 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
        return true;
  }
  
-  public synchronized void deleteBeacon(int idBeacon) {
+  public synchronized void deleteBeacon(String idBeacon) {
      
      try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(
                     "DELETE FROM hevacloud.beacon "
                     + " WHERE((`beacon`.`idBeacon` = ?)");
-            ps.setInt(1, idBeacon);
+            ps.setString(1, idBeacon);
           
             int result = -1;
             result = ps.executeUpdate();//devuelve filas borradas
@@ -335,8 +335,7 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
      
      try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(
-                    "DELETE FROM hevacloud.tag "
-                    + " WHERE((`beacon`.`idTag` = ?)");
+                    "DELETE FROM hevacloud.tags  WHERE(`tags`.`idTag` = ?)");
             ps.setInt(1, idTag);
           
             int result = -1;
@@ -380,38 +379,41 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
  ArrayList<Beacon> bl= new ArrayList<Beacon>();
  Beacon b= new Beacon();
      
- String sql="Select Beacon_idBeacon" + " FROM hevacloud.campain_has_beacon" + " WHERE ('" + idCampain + "' = beacon.Campain_idCampain)";   
+ String sql="Select Beacon_mac" + " FROM hevacloud.campain_has_beacon" + " WHERE (" + idCampain + " = Campain_idCampain)";   
             
-            Statement ps2 = connection.createStatement();
+            Statement ps = connection.createStatement();
      
-            ResultSet bidRs = ps2.executeQuery(sql);
+            ResultSet bidRs = ps.executeQuery(sql);
             
             
             while (bidRs.next()) {
-                int bid = bidRs.getInt("Beacon_idBeacon");
+                String mac = bidRs.getString("Beacon_mac");
                
-               String query="Select * " + " FROM hevacloud.beacon" + " WHERE ('" + bid + "' = beacon.idBeacon)";   
+               String query="Select *  FROM hevacloud.beacon WHERE(`beacon`.mac = '" + mac +  "' ) "; 
                
-               
+              
+               Statement ps2 = connection.createStatement();
+     
                ResultSet blRs = ps2.executeQuery(query);
                 while (blRs.next()) {
-                
+                    b.setMac(blRs.getString("mac"));
                     b.setId(blRs.getString("idBeacon"));
                     b.setUuid(blRs.getString("uuid"));
                     b.setMajor(blRs.getLong("major"));
                     b.setMinor(blRs.getLong("minor"));
-                    b.setMac(blRs.getString("mac"));
                     b.setColor(blRs.getString("color"));
                     b.setName(blRs.getString("name"));
                     b.setIcon(blRs.getString("icon"));
                     
                     bl.add(b);
+                    b= new Beacon();
                 
                 
                 }
+              ps2.close();  
             }
-         ps2.close();
         
+        ps.close();
     
 
 
@@ -427,9 +429,9 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
      
  String sql="Select Tags_idTags " + " FROM hevacloud.campain_has_tags" + " WHERE ('" + idCampain + "' = campain_has_tags.Campain_idCampain)";   
             
-            Statement ps2 = connection.createStatement();
+            Statement ps = connection.createStatement();
      
-            ResultSet tagidRs = ps2.executeQuery(sql);
+            ResultSet tagidRs = ps.executeQuery(sql);
             
             
             while (tagidRs.next()) {
@@ -437,7 +439,7 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
                
                String query="Select Name " + " FROM hevacloud.tags" + " WHERE ('" + tid + "' = tags.idTags)";   
                
-               
+               Statement ps2 = connection.createStatement();
                ResultSet blRs = ps2.executeQuery(query);
                 while (blRs.next()) {
                 
@@ -449,10 +451,11 @@ public synchronized String insertCamapinHasTag(String idTag,String idCampain) {
                 
                 
                 }
+                   ps2.close();
             }
   
             
-            ps2.close();
+            ps.close();
         
     
 
@@ -475,7 +478,7 @@ public void closeConnection(){
 
 }
 
-    public String removeCamapinHastag(String oldtag, String idCampain) {
+    public String removeCamapinHastag(int oldtag, int idCampain) {
      String id = null;
        try {
             String sql =
@@ -483,8 +486,8 @@ public void closeConnection(){
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setString(1, idCampain);
-            ps.setString(2, oldtag);
+            ps.setInt(1, idCampain);
+            ps.setInt(2, oldtag);
           
             
       int result = -1;
@@ -504,11 +507,11 @@ public void closeConnection(){
        try {
             String sql =
                     "SELECT "
+                     + " mac,"
                      + " idBeacon,"
                      + " uuid,"
                      + " major,"
                      + " minor,"
-                     + " mac,"
                      + " color,"
                      + " name,"
                      + " icon "
@@ -518,11 +521,11 @@ public void closeConnection(){
             ResultSet blRs = ps2.executeQuery(sql);
             while (blRs.next()) {
                 Beacon b = new Beacon();
+                    b.setMac(blRs.getString("mac"));
                     b.setId(blRs.getString("idBeacon"));
                     b.setUuid(blRs.getString("uuid"));
                     b.setMajor(blRs.getLong("major"));
                     b.setMinor(blRs.getLong("minor"));
-                    b.setMac(blRs.getString("mac"));
                     b.setColor(blRs.getString("color"));
                     b.setName(blRs.getString("name"));
                     b.setIcon(blRs.getString("icon"));
@@ -557,4 +560,38 @@ public void closeConnection(){
 
         return taglist;
     }
+    
+ 
+  public int giveMeTheTagIfThere(String nameTag) throws SQLException{
+    
+      int tag = 0 ;
+      
+       String query="Select idTags " + " FROM hevacloud.tags" + " WHERE ('" + nameTag + "' = tags.Name)";   
+              Statement ps = connection.createStatement();
+       ResultSet blRs = ps.executeQuery(query);
+                while (blRs.next()) {
+                
+                   
+          tag = blRs.getInt("idTags");
+                   
+                    
+                   
+                
+                
+                
+            }
+  
+            
+            ps.close();
+        
+    
+
+
+    return tag;
+  
+  
+  
+  }  
+  
+  
 }

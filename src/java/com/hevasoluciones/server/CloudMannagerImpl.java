@@ -246,8 +246,8 @@ public class CloudMannagerImpl implements CloudMannager{
 
                 campain.setId(result.getInt ("idCampain"));
                 campain.setTitle(result.getString ("title"));
-                campain.setTitle(result.getString ("content"));
-                campain.setTitle(result.getString ("featuredImage"));
+                campain.setContent(result.getString ("content"));
+                campain.setFeaturedImage(result.getString ("featuredImage"));
                 ArrayList<Beacon> beacons = cdb.getBeaconsByCampin(result.getInt ("idCampain"));
                 for(Beacon b: beacons){
                 campain.beacons.add(b);
@@ -260,6 +260,7 @@ public class CloudMannagerImpl implements CloudMannager{
                 }
                 
                 campains.add(campain);
+                campain= new Campains();
                 
             }
         } catch (SQLException ex) {
@@ -281,32 +282,43 @@ public class CloudMannagerImpl implements CloudMannager{
     cdb.createConnection();
     
     
-   String idCampain = cdb.insertCampain(title,content,featuredImage);
+   int idCampain = cdb.insertCampain(title,content,featuredImage);
    
-   if(idCampain!=null){
+   if(idCampain!=0){
         for (String  tag : tags) {
-            
-            
+          int id = 0;  
+            try {
+                id = cdb.giveMeTheTagIfThere(tag);
+            } catch (SQLException ex) {
+                Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       if(id==0){
         String idTag = cdb.insertTag(tag);
-        cdb.insertCamapinHasTag(idTag, idCampain);
-        
+        cdb.insertCamapinHasTag(Integer.valueOf(idTag), idCampain);
+       }else
+       {
+        cdb.insertCamapinHasTag(id,idCampain);
+       }   
         }
         
         for (Beacon beacon : beaconList) {
             
             
-        String idBeacon = cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
-        cdb.insertCamapinHasBeacons(idBeacon, idCampain);
+        //String idBeacon = cdb.insertBeacon(beacon.getId(),beacon.getUuid(),beacon.getMajor(),beacon.getMinor(),beacon.getMac(),beacon.getColor(),beacon.getName(),beacon.getIcon());
+        cdb.insertCamapinHasBeacons(beacon.getMac(), idCampain);
         
         }  
         
+   }else{
+   
+    return "Campain not created"; 
    }
     
     
     
     
         
-    return "Number" + idCampain + "Campain successfully created"; 
+    return  "Campain created successfully "; 
         
         
     }
@@ -339,7 +351,7 @@ public class CloudMannagerImpl implements CloudMannager{
         
         for(Beacon beaconsByCampain : bc){
         
-            if(b.getId()!=beaconsByCampain.getId()){
+            if(b.getId() == null ? beaconsByCampain.getId() != null : !b.getId().equals(beaconsByCampain.getId())){
             
               count++;
             }
@@ -348,7 +360,7 @@ public class CloudMannagerImpl implements CloudMannager{
           if(count==0){
               
           String idBeacon = cdb.insertBeacon(b.getId(),b.getUuid(),b.getMajor(),b.getMinor(),b.getMac(),b.getColor(),b.getName(),b.getIcon());
-           cdb.insertCamapinHasBeacons(idBeacon, String.valueOf(idCampain));
+           cdb.insertCamapinHasBeacons(idBeacon,idCampain);
         
           }
         
@@ -361,7 +373,7 @@ public class CloudMannagerImpl implements CloudMannager{
         
         for(Beacon newBeacon : beacon){
         
-            if(oldbeacon.getId()==newBeacon.getId()){
+            if(oldbeacon.getId() == null ? newBeacon.getId() == null : oldbeacon.getId().equals(newBeacon.getId())){
             
               count++;
             }
@@ -370,7 +382,7 @@ public class CloudMannagerImpl implements CloudMannager{
           if(count==0){
               
          
-           cdb.removeCamapinHasBeacons(String.valueOf(oldbeacon.getId()), String.valueOf(idCampain));
+           cdb.removeCamapinHasBeacons(String.valueOf(oldbeacon.getId()), idCampain);
         
           }
         
@@ -397,7 +409,7 @@ public class CloudMannagerImpl implements CloudMannager{
           if(count==0){
               
            String idtag = cdb.insertTag(nameTag);
-           cdb.insertCamapinHasBeacons(idtag, String.valueOf(idCampain));
+           cdb.insertCamapinHasTag(Integer.valueOf(idtag), idCampain);
         
           }
         
@@ -407,6 +419,7 @@ public class CloudMannagerImpl implements CloudMannager{
          for(String oldtag: tbc){
        
         int count=0;
+        
         
         for(String newtag : tag){
         
@@ -418,8 +431,14 @@ public class CloudMannagerImpl implements CloudMannager{
         }
           if(count==0){
               
-         
-           cdb.removeCamapinHastag(oldtag, String.valueOf(idCampain));
+           int id=0;
+            try {
+                id = cdb.giveMeTheTagIfThere(oldtag);
+            } catch (SQLException ex) {
+                Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(id!=0)
+           cdb.removeCamapinHastag(id, idCampain);
         
           }
         
