@@ -351,7 +351,7 @@ public class CloudMannagerImpl implements CloudMannager{
         
         for(Beacon beaconsByCampain : bc){
         
-            if(b.getId() == null ? beaconsByCampain.getId() != null : !b.getId().equals(beaconsByCampain.getId())){
+            if(b.getMac() == null ? beaconsByCampain.getMac() != null : b.getMac().equals(beaconsByCampain.getMac())){
             
               count++;
             }
@@ -359,8 +359,8 @@ public class CloudMannagerImpl implements CloudMannager{
         }
           if(count==0){
               
-          String idBeacon = cdb.insertBeacon(b.getId(),b.getUuid(),b.getMajor(),b.getMinor(),b.getMac(),b.getColor(),b.getName(),b.getIcon());
-           cdb.insertCamapinHasBeacons(idBeacon,idCampain);
+         // String idBeacon = cdb.insertBeacon(b.getId(),b.getUuid(),b.getMajor(),b.getMinor(),b.getMac(),b.getColor(),b.getName(),b.getIcon());
+           cdb.insertCamapinHasBeacons(b.getMac(),idCampain);
         
           }
         
@@ -373,7 +373,7 @@ public class CloudMannagerImpl implements CloudMannager{
         
         for(Beacon newBeacon : beacon){
         
-            if(oldbeacon.getId() == null ? newBeacon.getId() == null : oldbeacon.getId().equals(newBeacon.getId())){
+            if(oldbeacon.getMac() == null ? newBeacon.getMac() == null : oldbeacon.getMac().equals(newBeacon.getMac())){
             
               count++;
             }
@@ -382,7 +382,7 @@ public class CloudMannagerImpl implements CloudMannager{
           if(count==0){
               
          
-           cdb.removeCamapinHasBeacons(String.valueOf(oldbeacon.getId()), idCampain);
+           cdb.removeCamapinHasBeacons(String.valueOf(oldbeacon.getMac()), idCampain);
         
           }
         
@@ -397,9 +397,10 @@ public class CloudMannagerImpl implements CloudMannager{
          for(String nameTag: tag){
        
         int count=0;
-        
+       
         for(String tagByCampain : tbc){
         
+            
             if(nameTag.equals(tagByCampain)){
             
               count++;
@@ -407,10 +408,20 @@ public class CloudMannagerImpl implements CloudMannager{
         
         }
           if(count==0){
-              
+            int id=0;
+            try {
+                id = cdb.giveMeTheTagIfThere(nameTag);
+            } catch (SQLException ex) {
+                Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(id==0)   {
            String idtag = cdb.insertTag(nameTag);
            cdb.insertCamapinHasTag(Integer.valueOf(idtag), idCampain);
-        
+            }
+            else
+            {
+             cdb.insertCamapinHasTag(id, idCampain);
+            }
           }
         
         }
