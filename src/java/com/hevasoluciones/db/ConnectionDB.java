@@ -355,7 +355,7 @@ public synchronized String insertCamapinHasTag(int idTag,int idCampain) {
                     + "', content = '"  + Content
                     + "', featuredImage = '" + featuredImage
                   
-                    + "'  WHERE (id = '" + id + "')";
+                    + "'  WHERE (`campain`.`idCampain` = '" + id + "')";
      
       try {
        Statement ps = connection.createStatement();
