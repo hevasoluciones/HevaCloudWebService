@@ -138,4 +138,36 @@ public class CenterCloud {
      }
         return "ok";
     }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "updateBeaconsInDb")
+    public String updateBeaconsInDb() {
+        //TODO write your implementation code here:
+     cm= new CloudMannagerImpl();
+     boolean itshere=false;  
+     ArrayList<Beacon> mybeacon = cm.getBeacon("redigitalbeacons", "68fed2c1fecc03e461572b3e72652440");
+     ArrayList<Beacon> mybeaconFromDb = cm.getBeaconsfromDB();
+    
+     for(Beacon b: mybeacon)
+     {
+     itshere=false;      
+     for(Beacon bdb: mybeaconFromDb) {   
+     
+     if(b.getMac().equals(bdb.getMac()))    
+     
+         itshere= true;
+     
+     }
+     
+     if(itshere==false){
+      cm.insertBeacon(b);
+     }
+     }
+        return "ok";
+    }
+    
+    
+    
 }
