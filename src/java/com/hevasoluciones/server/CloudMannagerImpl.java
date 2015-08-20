@@ -7,6 +7,7 @@ package com.hevasoluciones.server;
 
 import com.hevasoluciones.db.ConnectionDB;
 import com.hevasoluciones.shared.Beacon;
+import com.hevasoluciones.shared.BeaconStatus;
 import com.hevasoluciones.shared.Campains;
 import com.hevasoluciones.shared.VisitsRegionSpec;
 import com.hevasoluciones.shared.Visits;
@@ -79,7 +80,7 @@ public class CloudMannagerImpl implements CloudMannager{
                 myBeacons.setColor((String) obj2.get("color"));
                 myBeacons.setName((String) obj2.get("name"));
                 myBeacons.setIcon((String) obj2.get("icon"));
-               // myBeacons.setBattery_life_expectancy_in_days((int) obj2.get("battery_life_expectancy_in_days"));
+                myBeacons.setBattery_life_expectancy_in_days((long) obj2.get("battery_life_expectancy_in_days"));
                 myBeacons.setTags((ArrayList<String>) obj2.get("tags"));
                 
                 myBeaconsList.add(myBeacons);
@@ -498,6 +499,40 @@ public class CloudMannagerImpl implements CloudMannager{
             Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    @Override
+    public BeaconStatus getAllBeaconsStatus(String id, String token) {
+        BeaconStatus bs=new BeaconStatus();
+        int countAlert=0;
+        int countOff=0;
+        int countOn=0;
+        ArrayList<Beacon> myBeacon= new ArrayList<Beacon>();
+        
+        myBeacon = getBeacon(id,token);
+      
+        for(Beacon b : myBeacon){
+        if(b.getBeaconStatus().equals("alert"))
+        {
+        countAlert++;
+        }
+        else if(b.getBeaconStatus().equals("off")){
+        
+        countOff++;
+        }
+        else if(b.getBeaconStatus().equals("on")){
+        
+        countOn++;
+        }
+        }
+        
+        
+      bs.setCountBeaconAlert(countAlert);
+      bs.setCountBeaconOff(countOff);
+      bs.setCountBeaconOn(countOn);
+      
+      return bs;
+    
     }
     
     

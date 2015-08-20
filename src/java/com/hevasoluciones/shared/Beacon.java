@@ -20,7 +20,7 @@ public class Beacon {
   private String mac;
   private String color;
   private String name;
-  //private int battery_life_expectancy_in_days;
+  long battery_life_expectancy_in_days;
   private ArrayList<String> tags;
   //private Object settings;
   /*private int interval;
@@ -104,13 +104,13 @@ public class Beacon {
         this.name = name;
     }
 
-  /*  public int getBattery_life_expectancy_in_days() {
+    public long getBattery_life_expectancy_in_days() {
         return battery_life_expectancy_in_days;
     }
 
-    public void setBattery_life_expectancy_in_days(int battery_life_expectancy_in_days) {
+    public void setBattery_life_expectancy_in_days(long battery_life_expectancy_in_days) {
         this.battery_life_expectancy_in_days = battery_life_expectancy_in_days;
-    }*/
+    }
 
     public ArrayList<String> getTags() {
         return tags;
@@ -195,7 +195,21 @@ public class Beacon {
   */
   
   
+    public String getBeaconStatus(){
     
+    if(this.battery_life_expectancy_in_days==0){
+    return "off";
+    
+    }else if(this.battery_life_expectancy_in_days<=30)   
+    {
+     return "alert";
+    }else{
+        
+    return "on";     
+    }
+    
+        
+    }
     
   
      

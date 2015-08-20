@@ -6,6 +6,7 @@
 package com.hevasoluciones.server;
 
 import com.hevasoluciones.shared.Beacon;
+import com.hevasoluciones.shared.BeaconStatus;
 import com.hevasoluciones.shared.Campains;
 import com.hevasoluciones.shared.VisitsRegionSpec;
 import com.hevasoluciones.shared.Visits;
@@ -28,5 +29,6 @@ public String  removeCampain(int idCampin);
 public String insertBeacon(Beacon beacon);
 public ArrayList<Beacon> getBeaconsfromDB();
 public ArrayList<String> getTags();
+public BeaconStatus getAllBeaconsStatus(String id, String token);
 
 }

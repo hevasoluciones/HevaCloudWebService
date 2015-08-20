@@ -8,6 +8,7 @@ package com.hevasoluciones.hsws;
 import com.hevasoluciones.server.CloudMannager;
 import com.hevasoluciones.server.CloudMannagerImpl;
 import com.hevasoluciones.shared.Beacon;
+import com.hevasoluciones.shared.BeaconStatus;
 import com.hevasoluciones.shared.Campains;
 import com.hevasoluciones.shared.VisitsRegionSpec;
 import java.util.ArrayList;
@@ -166,6 +167,18 @@ public class CenterCloud {
      }
      }
         return "ok";
+    }
+
+    /**
+     * Web service operation
+     * @param appId
+     * @param appToken
+     * @return 
+     */
+    @WebMethod(operationName = "getAllBeaconsStatus")
+    public BeaconStatus getAllBeaconsStatus(@WebParam(name = "appId") String appId, @WebParam(name = "appToken") String appToken) {
+       cm= new CloudMannagerImpl();
+       return cm.getAllBeaconsStatus(appId, appToken);
     }
     
     
