@@ -534,6 +534,40 @@ public class CloudMannagerImpl implements CloudMannager{
       return bs;
     
     }
+
+    @Override
+    public String insertUserUseAppString(String idFb, String email, String fullname, String gendre, String urlPhotoProfile, String brithdays) {
+       
+        cdb= new ConnectionDB();
+        cdb.createConnection();
+        String isthis = null;
+        try {
+            isthis = cdb.selectUserProfileFB(idFb,email);
+        } catch (SQLException ex) {
+            Logger.getLogger(CloudMannagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(isthis.equals(fullname)) {
+            
+            return "user already exists"; 
+            
+        } else {
+            return cdb.insertUserUseApp(idFb, email, fullname, gendre, urlPhotoProfile, brithdays);
+        }
+    }
+
+    @Override
+    public String insertUserLike(int idCampain, String userEmail, String idUser) {
+        cdb= new ConnectionDB();
+        cdb.createConnection();
+        return cdb.insertUserLike(idCampain, userEmail, idUser);
+    }
+
+    @Override
+    public String insertUserShare(int idCampain, String userEmail, String idUser) {
+        cdb= new ConnectionDB();
+        cdb.createConnection();
+        return cdb.insertUserShare(idCampain, userEmail, idUser);
+    }
     
     
    

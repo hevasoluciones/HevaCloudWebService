@@ -37,7 +37,7 @@ public boolean createConnection()
 {
    try {
       Class.forName("com.mysql.jdbc.Driver");
-      connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hevaCloud","root","");
+      connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hevacloud","root","");
    } catch (SQLException | ClassNotFoundException ex) {
       return false;
    }
@@ -85,8 +85,8 @@ public synchronized int insertCampain(String title,String Content,String feature
 
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
            
-            ps.setString(1, Content);
-            ps.setString(2, title);
+            ps.setString(1, title);
+            ps.setString(2, Content);
             ps.setString(3, featuredImage);
             
 
@@ -578,7 +578,6 @@ public void closeConnection(){
                    
                 
                 
-                
             }
   
             
@@ -593,5 +592,191 @@ public void closeConnection(){
   
   }  
   
-  
+ public synchronized String insertUserUseApp(String idFb,String email,String fullname,String gendre,String urlPhotoProfile ,String brithdays) {
+    String id = null;
+       try {
+            String sql =
+                    "INSERT INTO hevacloud.user_data ("
+                     + " fb_id,"
+                     + " email,"
+                     + " full_name,"
+                     + " gender,"
+                     + " url_prfile_photo,"
+                     + " brirthdays) "
+                    + "VALUES (?,?,?,?,?,?)";
+
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setString(1, idFb);
+            ps.setString(2, email);
+            ps.setString(3, fullname);
+            ps.setString(4, gendre);
+            ps.setString(5, urlPhotoProfile);
+            ps.setString(6, brithdays);
+            
+            
+
+            ps.executeUpdate();
+            
+             ResultSet  generatedKeys = ps.getGeneratedKeys();
+           if (generatedKeys.next()) {
+                 id = String.valueOf(generatedKeys.getInt(1));
+             }
+            ps.close();
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle);
+        }
+
+       
+      
+      return id;
+    
+      
+
+
+} 
+ 
+       public synchronized String selectUserProfileFB(String idFb,String email) throws SQLException{
+      String fullname = null;
+      String sql= "SELECT `full_name` FROM `user_data` WHERE `fb_id` = "+ idFb + " AND `email`=" + "'" + email + "'"   ;
+
+         try (Statement ps = connection.createStatement()) {
+         ResultSet bidRs = ps.executeQuery(sql);
+         
+         
+         while (bidRs.next()) {
+             
+             fullname = bidRs.getString("full_name");
+             
+             
+             
+         }
+     }
+    
+
+
+   return fullname;
+    
+     
+ 
+ }
+       
+       
+       
+ 
+public synchronized String insertUserLike(int idCampain,String userEmail,String idUser ) {
+    String id = null;
+       try {
+            String sql =
+                    "INSERT INTO hevacloud.user_like ("
+                    + " Campain_idCampain,"
+                    + " user_data_email,"
+                    + " user_data_fb_id) "
+                    + "VALUES (?,?,?)";
+
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+           
+            ps.setInt(1, idCampain);
+            ps.setString(2, userEmail);
+            ps.setString(3, idUser);
+          
+            
+
+            ps.executeUpdate();
+            
+             ResultSet  generatedKeys = ps.getGeneratedKeys();
+           if (generatedKeys.next()) {
+                 id = String.valueOf(generatedKeys.getInt(1));
+             }
+            ps.close();
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle);
+        }
+
+       
+      
+      return id;
+    
+      
+
+
+}
+ 
+public synchronized String insertUserShare(int idCampain,String userEmail,String idUser ) {
+    String id = null;
+       try {
+            String sql =
+                    "INSERT INTO hevacloud.user_share ("
+                    + " Campain_idCampain,"
+                    + " user_data_email,"
+                    + " user_data_fb_id) "
+                    + "VALUES (?,?,?)";
+
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+           
+            ps.setInt(1, idCampain);
+            ps.setString(2, userEmail);
+            ps.setString(3, idUser);
+          
+            
+
+            ps.executeUpdate();
+            
+             ResultSet  generatedKeys = ps.getGeneratedKeys();
+           if (generatedKeys.next()) {
+                 id = String.valueOf(generatedKeys.getInt(1));
+             }
+            ps.close();
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle);
+        }
+
+       
+      
+      return id;
+    
+      
+
+
+}
+
+
+
+/*public synchronized  int  selectShareCountInPromo(String email,String fb_id, String idCamapin) throws SQLException{
+
+      int count = 0;
+      String sql= "SELECT `count` FROM `user_share` WHERE `user_data_fb_id` = "+ fb_id + " AND `user_data_email`=" + "'" + email + "' AND `Campain_idCampain`=" + idCamapin ;
+
+         try (Statement ps = connection.createStatement()) {
+         ResultSet bidRs = ps.executeQuery(sql);
+          while (bidRs.next()) {
+             
+             count = bidRs.getInt("count");
+            }
+       }
+
+   return count;
+}*/
+
+/*public synchronized  int  selectInUserlikeTable(String email,String fb_id, String idCamapin) throws SQLException{
+
+      int count = 0;
+      String sql= "SELECT * FROM `user_like`";
+
+         try (Statement ps = connection.createStatement()) {
+         ResultSet bidRs = ps.executeQuery(sql);
+          while (bidRs.next()) {
+             
+              
+             count = bidRs.getInt("count");
+            }
+       }
+
+   return count;
+}*/
+
+
+
+
+
 }

@@ -30,5 +30,7 @@ public String insertBeacon(Beacon beacon);
 public ArrayList<Beacon> getBeaconsfromDB();
 public ArrayList<String> getTags();
 public BeaconStatus getAllBeaconsStatus(String id, String token);
-
+public String insertUserUseAppString(String idFb,String email,String fullname,String gendre,String urlPhotoProfile ,String brithdays);
+public  String insertUserLike(int idCampain,String userEmail,String idUser );
+public String insertUserShare(int idCampain,String userEmail,String idUser );
 }

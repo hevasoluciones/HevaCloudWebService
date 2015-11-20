@@ -181,6 +181,62 @@ public class CenterCloud {
        return cm.getAllBeaconsStatus(appId, appToken);
     }
     
+
+  /**
+     * Web service operation
+     * @return 
+     */
+    @WebMethod(operationName = "getAllTags")
+    public ArrayList<String> getAllTags() {
+       cm= new CloudMannagerImpl();
+       return cm.getTags();
+    }
     
     
+    /**
+     * Web service operation
+     * @param idFb
+     * @param email
+     * @param fullname
+     * @param gendre
+     * @param urlPicture
+     * @param brithdays
+     * @return 
+     */
+    @WebMethod(operationName = "insertUserUseAppString")
+   
+    public String  insertUserUseAppString(@WebParam(name = "idFb") String idFb, @WebParam(name = "email") String email, @WebParam(name = "fullname") String fullname, @WebParam(name = "gendre") String gendre, @WebParam(name = "urlPicture") String urlPicture, @WebParam(name = "brithdays") String brithdays) {
+      
+              
+        cm= new CloudMannagerImpl();
+       return cm.insertUserUseAppString(idFb, email, fullname, gendre, urlPicture, brithdays);
+    } 
+    
+       /**
+     * Web service operation
+     * @param idCampain 
+     * @param userEmail 
+     * @param idUser 
+     * @return 
+     */
+    @WebMethod(operationName = "insertUserLike")
+   
+    public String  insertUserLike(@WebParam(name = "idCampain") int idCampain, @WebParam(name = "userEmail")  String userEmail, @WebParam(name = "idUser") String idUser ) {
+       cm= new CloudMannagerImpl();
+       return cm.insertUserLike(idCampain, userEmail, idUser);
+    }
+    
+           /**
+     * Web service operation
+     * @param idCampain 
+     * @param userEmail 
+     * @param idUser 
+     * @return 
+     */
+    @WebMethod(operationName = "insertUserShare")
+   
+    public String  insertUserShare(@WebParam(name = "idCampain") int idCampain, @WebParam(name = "userEmail")  String userEmail, @WebParam(name = "idUser") String idUser ) {
+       cm= new CloudMannagerImpl();
+       return cm.insertUserShare(idCampain, userEmail, idUser);
+    }
 }
